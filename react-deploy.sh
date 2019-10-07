@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eu
+
 BUCKET_NAME=production-thankshell-react
 
 cd $(dirname $0)
