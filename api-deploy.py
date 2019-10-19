@@ -37,4 +37,5 @@ if __name__ == '__main__':
         '--template-file', 'packaged.yaml',
         '--stack-name', params['stack-name'],
         '--capabilities', 'CAPABILITY_IAM',
+        '--parameter-overrides', 'Environment={}'.format(args.environment),
     ])
