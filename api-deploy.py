@@ -22,7 +22,7 @@ if __name__ == '__main__':
     )
     args = parser.parse_args()
 
-    os.chdir('../thankshell-api-2')
+    os.chdir('../thankshell-api')
 
     params = ENV_PARAMS[args.environment]
 
