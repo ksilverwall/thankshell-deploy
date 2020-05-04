@@ -3,29 +3,27 @@ import argparse
 import subprocess
 from dotenv import load_dotenv
 
-BUCKET_NAME = 'thankshell-api'
-
-ENV_PARAMS = {
-    'production': {
-        'stack-name': 'thankshell-api',
-    },
-    'staging': {
-        'stack-name': 'thankshell-api-stg',
-    },
-}
-
 
 def deploy_platform(args):
-    os.chdir('../thankshell-platforms')
+    os.chdir('../thankshell-platform')
 
-    subprocess.run([
-        'sam', 'deploy',
-        '--profile', os.getenv('PROFILE'),
-        '--template-file', 'template.yaml',
-        '--stack-name', os.getenv('PLATFORM_STACK_NAME'),
-        '--capabilities', 'CAPABILITY_IAM',
-        '--parameter-overrides', 'Environment={}'.format(args.environment),
-    ])
+    params = {
+        'GroupMembersTableName': os.getenv('GROUP_MEMBERS_TABLE_NAME'),
+    }
+
+    subprocess.run(
+        [
+            'sam', 'deploy',
+            '--profile', os.getenv('PROFILE'),
+            '--template-file', 'template.yml',
+            '--stack-name', os.getenv('PLATFORM_STACK_NAME'),
+            '--capabilities', 'CAPABILITY_IAM',
+            '--parameter-overrides',
+        ] + [
+            f'{key}={value}'
+            for key, value in params.items()
+        ]
+    )
 
 
 def deploy_api(args):
@@ -58,7 +56,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '-e', '--environment',
-        choices=ENV_PARAMS.keys(),
+        choices=['production', 'staging'],
         default='staging',
     )
     parser.add_argument(
