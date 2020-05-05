@@ -35,14 +35,28 @@ def deploy_api(args):
         '--s3-bucket', os.getenv('CFN_BUCKET_NAME'),
     ])
 
-    subprocess.run([
-        'sam', 'deploy',
-        '--profile', os.getenv('PROFILE'),
-        '--template-file', 'packaged.yaml',
-        '--stack-name', os.getenv('API_STACK_NAME'),
-        '--capabilities', 'CAPABILITY_IAM',
-        '--parameter-overrides', 'Environment={}'.format(args.environment),
-    ])
+    params = {
+        'Environment': args.environment,
+        'EnvName': os.getenv('ENV_NAME'),
+        'AuthTableName': os.getenv('AUTH_TABLE_NAME'),
+        'UsersTableName': os.getenv('USERS_TABLE_NAME'),
+        'GroupsTableName': os.getenv('GROUPS_TABLE_NAME'),
+        'InfoTableName': os.getenv('INFO_TABLE_NAME'),
+        'TransactionsTableName': os.getenv('TRANSACTION_TABLE_NAME'),
+    }
+    subprocess.run(
+        [
+            'sam', 'deploy',
+            '--profile', os.getenv('PROFILE'),
+            '--template-file', 'packaged.yaml',
+            '--stack-name', os.getenv('API_STACK_NAME'),
+            '--capabilities', 'CAPABILITY_IAM',
+            '--parameter-overrides',
+        ] + [
+            f'{key}={value}'
+            for key, value in params.items()
+        ]
+    )
 
 
 def run(args):
