@@ -9,6 +9,7 @@ def deploy_platform(args):
 
     params = {
         'GroupMembersTableName': os.getenv('GROUP_MEMBERS_TABLE_NAME'),
+        'CfnBucketName': os.getenv('CFN_BUCKET_NAME'),
     }
 
     subprocess.run(
