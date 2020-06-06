@@ -8,7 +8,8 @@ def deploy_platform(args):
     os.chdir('../thankshell-platform')
 
     params = {
-        'GroupMembersTableName': os.getenv('GROUP_MEMBERS_TABLE_NAME'),
+        'TokenTransactionsTableName': os.getenv('TOKEN_TRANSACTIONS_TABLE_NAME'),
+        'GroupMembersTableName': os.getenv('TRANSACTIONS_TABLE_NAME'),
         'CfnBucketName': os.getenv('CFN_BUCKET_NAME'),
     }
 
