@@ -9,7 +9,7 @@ def deploy_platform(args):
 
     params = {
         'TokenTransactionsTableName': os.getenv('TOKEN_TRANSACTIONS_TABLE_NAME'),
-        'GroupMembersTableName': os.getenv('TRANSACTIONS_TABLE_NAME'),
+        'GroupMembersTableName': os.getenv('GROUP_MEMBERS_TABLE_NAME'),
         'CfnBucketName': os.getenv('CFN_BUCKET_NAME'),
     }
 
