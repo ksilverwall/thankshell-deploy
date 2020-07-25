@@ -17,7 +17,7 @@ def get_classic(client, table_name):
             'from_account': item['from_account']['S'],
             'to_account': item['to_account']['S'],
             'amount': item['amount']['N'],
-            'comment': item['comment']['S'],
+            'comment': item['comment']['S'] if 'comment' in item else ' ',
         }
         for item in response['Items']
     )
@@ -78,7 +78,8 @@ def run(args):
 
     records = transform(classic_records)
 
-    set_transactions(client, os.getenv('TOKEN_TRANSACTIONS_TABLE_NAME'), records)
+    for idx in range(0, len(records), 24):
+        set_transactions(client, os.getenv('TOKEN_TRANSACTIONS_TABLE_NAME'), records[idx:idx + 24])
 
 
 if __name__ == '__main__':
