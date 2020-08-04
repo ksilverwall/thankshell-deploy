@@ -48,6 +48,7 @@ def transform(classic_records):
             'from_member_id': {'S': convert_member(record['from_account'])},
             'to_member_id': {'S': convert_member(record['to_account'])},
             'amount': {'N': record['amount']},
+            'timestamp': {'N': str(record['timestamp'])},
             'comment': {'S': record['comment'].strip()},
         }
         for record in classic_records
