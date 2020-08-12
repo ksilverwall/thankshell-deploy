@@ -1,10 +1,11 @@
 import os
 import argparse
 import subprocess
+import re
 from dotenv import load_dotenv
 
 
-def deploy_platform(args):
+def deploy_platform(dry_run):
     os.chdir('../thankshell-platform')
 
     params = {
@@ -26,14 +27,20 @@ def deploy_platform(args):
         for key, value in params.items()
     ]
 
-    if args.dry_run:
+    if dry_run:
         command.append('--no-execute-changeset')
 
     subprocess.run(command)
 
 
-def deploy_api(args):
+def deploy_api(dry_run, version):
     os.chdir('../thankshell-api')
+
+    result = re.fullmatch(r'v\d\.\d', version)
+    if not result:
+        raise RuntimeError('illegal version format, example v1.0')
+
+    stack_name = "{}-{}".format(os.getenv('API_STACK_NAME'), version.replace('.', '-'))
 
     subprocess.run([
         'sam', 'package',
@@ -51,7 +58,7 @@ def deploy_api(args):
             'sam', 'deploy',
             '--profile', os.getenv('PROFILE'),
             '--template-file', 'packaged.yaml',
-            '--stack-name', os.getenv('API_STACK_NAME'),
+            '--stack-name', stack_name,
             '--capabilities', 'CAPABILITY_IAM',
             '--parameter-overrides',
         ] + [
@@ -62,13 +69,15 @@ def deploy_api(args):
 
 
 def run(args):
+    load_dotenv(f'.env.{args.environment}')
+
     if args.target == 'platform':
-        deploy_platform(args)
+        deploy_platform(args.dry_run)
     elif args.target == 'api':
-        deploy_api(args)
+        deploy_api(args.dry_run, args.version)
 
 
-if __name__ == '__main__':
+def get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '-e', '--environment',
@@ -79,13 +88,17 @@ if __name__ == '__main__':
         '--dry-run',
         action='store_true',
     )
-    parser.add_argument(
-        'target',
-        choices=['platform', 'api'],
-        default='staging',
-    )
-    args = parser.parse_args()
 
-    load_dotenv(f'.env.{args.environment}')
+    subparsers = parser.add_subparsers(dest='target', help='sub-command help')
+    parser_platform = subparsers.add_parser('platform', help='deploy platform')
 
-    run(args)
+    parser_api = subparsers.add_parser('api', help='deploy api')
+    parser_api.add_argument('version')
+
+    return parser
+
+
+if __name__ == '__main__':
+    parser = get_parser()
+
+    run(parser.parse_args())
