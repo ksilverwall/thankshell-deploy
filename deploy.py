@@ -42,12 +42,8 @@ def deploy_api(args):
     ])
 
     params = {
-        'Environment': args.environment,
-        'EnvName': os.getenv('ENV_NAME'),
         'GroupsTableName': os.getenv('GROUPS_TABLE_NAME_2'),
         'GroupMembersTableName': os.getenv('GROUP_MEMBERS_TABLE_NAME'),
-        'InfoTableName': os.getenv('INFO_TABLE_NAME'),
-        'TransactionsTableName': os.getenv('TRANSACTION_TABLE_NAME'),
         'TokenTransactionsTableName': os.getenv('TOKEN_TRANSACTIONS_TABLE_NAME'),
     }
     subprocess.run(
