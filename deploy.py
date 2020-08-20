@@ -90,6 +90,8 @@ def get_parser():
     )
 
     subparsers = parser.add_subparsers(dest='target', help='sub-command help')
+    subparsers.required = True
+
     parser_platform = subparsers.add_parser('platform', help='deploy platform')
 
     parser_api = subparsers.add_parser('api', help='deploy api')
